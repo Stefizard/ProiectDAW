@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProiectFinalDAW.Models.Base
+namespace ProiectDAW.Models.Base
 {
-    public interface IBaseEntity
+    public class IBaseEntity
     {
         Guid Id { get; set; }
 

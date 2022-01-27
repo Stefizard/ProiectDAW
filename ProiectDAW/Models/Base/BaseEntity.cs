@@ -5,9 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProiectFinalDAW.Models.Base
+namespace ProiectDAW.Models.Base
 {
-    public class BaseEntity 
+    public class BaseEntity
     {
 
         [Key]
