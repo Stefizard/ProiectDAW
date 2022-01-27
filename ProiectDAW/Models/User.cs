@@ -6,10 +6,10 @@ using ProiectDAW.Models.Base;
 
 namespace ProiectDAW.Models
 {
-    public enum rol { Admin, User}
+    public enum Rol { Admin, User}
     public class User:BaseEntity
     {
-        public rol Rol { get; set; }
+        public Rol Rol { get; set; }
         public string Nume { get; set; }
         public string Prenume { get; set; }
         public string Telefon { get; set; }
