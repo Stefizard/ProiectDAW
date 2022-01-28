@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using ProiectDAW.Repositories;
 using ProiectDAW.Models;
 using ProiectDAW.Models.DTOs;
+using BCryptNet = BCrypt.Net.BCrypt;
+using ProiectDAW.Utility;
 
 namespace ProiectDAW.Controllers
 {
@@ -15,16 +17,30 @@ namespace ProiectDAW.Controllers
     {
         private IUserRepository userRepository;
         private ICredentialeRepository credentialeRepository;
-        public UserController(IUserRepository user, ICredentialeRepository cred)
+        private IJWTUtils jwtUtils;
+        public UserController(IUserRepository user, ICredentialeRepository cred, IJWTUtils jwt)
         {
             userRepository = user;
             credentialeRepository = cred;
+            jwtUtils = jwt;
         }
 
         [HttpGet("{id}")]
+        [Authorization(Rol.Admin)]
         public IActionResult GetUser(Guid id)
         {
             var user = userRepository.Get(id);
+            if (user == null)
+            {
+                return BadRequest(new { Message = "Nu exista acest user." });
+            }
+            return Ok(user);
+        }
+
+        [HttpGet]
+        public IActionResult GetMyUser()
+        {
+            var user = (User)HttpContext.Items["User"];
             if (user == null)
             {
                 return BadRequest(new { Message = "Nu exista acest user." });
@@ -38,7 +54,7 @@ namespace ProiectDAW.Controllers
             var newCredentiale = new Credentiale
             {
                 Email = user.Email,
-                Parola = user.Parola
+                Parola = BCryptNet.HashPassword(user.Parola)
             };
             credentialeRepository.Create(newCredentiale);
             var rez = credentialeRepository.Save();
@@ -51,7 +67,8 @@ namespace ProiectDAW.Controllers
                 CredentialeId = newCredentiale.Id,
                 Nume = user.Nume,
                 Prenume = user.Prenume,
-                Telefon = user.Telefon
+                Telefon = user.Telefon,
+                Rol = Rol.User
             };
             userRepository.Create(newUser);
             rez = userRepository.Save();
@@ -60,6 +77,65 @@ namespace ProiectDAW.Controllers
                 return BadRequest(new { Message = "Inregistrare esuata." });
             }
             return Ok(new { Message = "Inregistrare efectuata cu succes." });
+        }
+
+        [HttpPost("Autentificare")]
+        public IActionResult Login(CredentialeDTO cred)
+        {
+            var user = userRepository.GetByEmail(cred.Email);
+            if (user == null || !BCryptNet.Verify(cred.Parola, user.Credentiale.Parola))
+            {
+                return BadRequest(new { Message = "Autentificare esuata." });
+            }
+            var token = jwtUtils.GenerateToken(user);
+            return Ok(new { Token = token });
+        }
+
+        [HttpPut]
+        public IActionResult UpdateUser(UserDTO newUser)
+        {
+            var user = (User)HttpContext.Items["User"];
+            if (user == null)
+            {
+                return BadRequest(new { Message = "Nu exista acest user." });
+            }
+            user.Nume = newUser.Nume;
+            user.Prenume = newUser.Prenume;
+            user.Telefon = newUser.Telefon;
+            userRepository.Update(user);
+            var rez = userRepository.Save();
+            if (!rez)
+            {
+                return BadRequest(new { Message = "Update esuat." });
+            }
+            return Ok(new { Message = "Update efectuat cu succes." });
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteUser()
+        {
+            var user = (User)HttpContext.Items["User"];
+            if (user != null)
+            {
+                userRepository.Delete(user);
+                userRepository.Save();
+            }
+            else
+            {
+                return BadRequest(new { Message = "Nu exista acest user." });
+            }
+            var cred = credentialeRepository.Get(user.CredentialeId);
+            if (cred == null)
+            {
+                return BadRequest(new { Message = "Nu exista acest user." });
+            }
+            credentialeRepository.Delete(cred);
+            var rez = credentialeRepository.Save();
+            if (!rez)
+            {
+                return BadRequest(new { Message = "Delete esuat." });
+            }
+            return Ok(new { Message = "Delete efectuat cu succes." });
         }
     }
 }

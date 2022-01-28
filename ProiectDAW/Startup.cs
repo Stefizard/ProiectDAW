@@ -13,6 +13,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using ProiectDAW.Data;
 using Microsoft.EntityFrameworkCore;
+using ProiectDAW.Repositories;
+using ProiectDAW.Utility;
 
 namespace ProiectDAW
 {
@@ -36,7 +38,11 @@ namespace ProiectDAW
             });
 
             services.AddDbContext<Context>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICredentialeRepository, CredentialeRepository>();
 
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            services.AddScoped<IJWTUtils, JWTUtils>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +58,8 @@ namespace ProiectDAW
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseMiddleware<JWTMiddleware>();
 
             app.UseAuthorization();
 

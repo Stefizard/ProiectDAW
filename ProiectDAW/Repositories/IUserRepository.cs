@@ -8,6 +8,7 @@ namespace ProiectDAW.Repositories
 {
     public interface IUserRepository:IGenericRepository<User>
     {
+        User GetByEmail(string email);
 
     }
 }
