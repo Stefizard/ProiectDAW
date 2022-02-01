@@ -10,5 +10,7 @@ namespace ProiectDAW.Repositories
     {
         User GetByEmail(string email);
 
+        ICollection<List<(DateTime Data, int Cantitate, string Nume, float Pret, string Categorie)>> GetComandaByUser(Guid idUser, Guid idComanda);
+
     }
 }

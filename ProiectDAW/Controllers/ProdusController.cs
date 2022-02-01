@@ -34,6 +34,30 @@ namespace ProiectDAW.Controllers
             return Ok(prod);
         }
 
+        [HttpGet("nr_produse_pe_categorii")]
+        public IActionResult GetNrProduseCategorii()
+        {
+            var rez = produsRepository.GetNrProduseDinCategorii();
+            if (rez is null || rez.Count == 0)
+            {
+                return BadRequest(new { message = "Eroare!" });
+            }
+
+            var dto = new NrProdCategDTO()
+            {
+                Categorii = new List<List<(string, int)>>()
+            };
+
+            foreach (var tuplu in rez)
+            {
+                var lista = new List<(string Categorie, int Nr)>();
+                lista.Add((tuplu.Item1, tuplu.Item2));
+                dto.Categorii.Add(lista);
+            }
+
+            return Ok(dto);
+        }
+
         [HttpPost]
         [Authorization(Rol.Admin)]
         public IActionResult PostProdus(ProdusDTO produs)

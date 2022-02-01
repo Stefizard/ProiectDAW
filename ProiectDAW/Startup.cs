@@ -41,6 +41,8 @@ namespace ProiectDAW
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICredentialeRepository, CredentialeRepository>();
             services.AddScoped<IProdusRepository, ProdusRepository>();
+            services.AddScoped<IComandaRepository, ComandaRepository>();
+            services.AddScoped<IListaProduseRepository, ListaProduseRepository>();
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.AddScoped<IJWTUtils, JWTUtils>();

@@ -8,6 +8,5 @@ namespace ProiectDAW.Repositories
 {
     public interface IComandaRepository:IGenericRepository<Comanda>
     {
-
     }
 }
