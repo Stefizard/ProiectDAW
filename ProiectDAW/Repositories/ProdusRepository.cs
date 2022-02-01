@@ -14,5 +14,10 @@ namespace ProiectDAW.Repositories
         {
 
         }
+
+        public Produs GetByNume(string nume)
+        {
+            return _table.FirstOrDefault(x => x.Nume.Equals(nume));
+        }
     }
 }

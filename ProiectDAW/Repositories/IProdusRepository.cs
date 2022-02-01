@@ -8,6 +8,6 @@ namespace ProiectDAW.Repositories
 {
     public interface IProdusRepository:IGenericRepository<Produs>
     {
-
+        Produs GetByNume(string nume);
     }
 }

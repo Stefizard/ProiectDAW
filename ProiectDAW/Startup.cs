@@ -40,6 +40,7 @@ namespace ProiectDAW
             services.AddDbContext<Context>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICredentialeRepository, CredentialeRepository>();
+            services.AddScoped<IProdusRepository, ProdusRepository>();
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.AddScoped<IJWTUtils, JWTUtils>();

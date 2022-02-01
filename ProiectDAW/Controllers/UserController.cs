@@ -115,22 +115,18 @@ namespace ProiectDAW.Controllers
         public IActionResult DeleteUser()
         {
             var user = (User)HttpContext.Items["User"];
-            if (user != null)
-            {
-                userRepository.Delete(user);
-                userRepository.Save();
-            }
-            else
+            if (user == null)
             {
                 return BadRequest(new { Message = "Nu exista acest user." });
             }
             var cred = credentialeRepository.Get(user.CredentialeId);
-            if (cred == null)
+            if (cred != null)
             {
-                return BadRequest(new { Message = "Nu exista acest user." });
+                credentialeRepository.Delete(cred);
+                credentialeRepository.Save();
             }
-            credentialeRepository.Delete(cred);
-            var rez = credentialeRepository.Save();
+            userRepository.Delete(user);
+            var rez = userRepository.Save();
             if (!rez)
             {
                 return BadRequest(new { Message = "Delete esuat." });
